@@ -1,0 +1,18 @@
+<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Меридиам — проверка тактильного отклика</title><style>body{margin:0;background:#06111d;color:#e1f2ff;font:16px/1.6 system-ui;padding:28px;max-width:520px}h1{font-size:25px}button,label,#swipe{display:block;margin:20px 0;padding:18px;border:1px solid #82b7d777;border-radius:16px;background:#142b3b;color:inherit}button{font:inherit;width:100%}input{margin-left:12px}#swipe{touch-action:none;user-select:none;min-height:90px}#status{min-height:50px;color:#a7cfe6}a{color:#b7e7ff}</style><h1>Тактильный отклик</h1><p>Открой эту страницу в Safari на iPhone. Сравни ощущения от трёх действий.</p><label>1. Переключи вручную <input type="checkbox" switch id="native"></label><button id="pulse">2. Нажми для короткого импульса</button><div id="swipe">3. Проведи пальцем влево или вправо</div><p id="status" role="status"></p><p>Изменение текста подтверждает обработку действия. Наличие вибрации оцени по ощущениям.</p><a href="./">Вернуться к галерее</a><input type="checkbox" switch id="probe" tabindex="-1" aria-hidden="true" style="position:fixed;left:-100px;top:-100px;opacity:0"><script>
+const status=document.getElementById('status');
+function pulse(){
+ if(typeof navigator.vibrate==='function'){
+  const accepted=navigator.vibrate(8);
+  status.textContent=accepted?'Запрос вибрации отправлен. Почувствовал импульс?':'Браузер отклонил запрос вибрации.';
+ }else{
+  document.getElementById('probe').click();
+  status.textContent='Проверка отклика через переключатель выполнена. Почувствовал импульс?';
+ }
+}
+document.getElementById('native').addEventListener('change',()=>status.textContent='Переключатель изменён. Почувствовал импульс?');
+document.getElementById('pulse').addEventListener('click',pulse);
+const swipe=document.getElementById('swipe');let start=null;
+swipe.addEventListener('pointerdown',event=>{start={id:event.pointerId,x:event.clientX};swipe.setPointerCapture(event.pointerId)});
+swipe.addEventListener('pointerup',event=>{if(start&&start.id===event.pointerId&&Math.abs(event.clientX-start.x)>35)pulse();start=null});
+swipe.addEventListener('pointercancel',()=>start=null);
+</script></html>
